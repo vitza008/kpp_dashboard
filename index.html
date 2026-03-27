@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌾 กำแพงเพชร · Dashboard ปลูกผักให้ได้ราคาดี</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --hot: #E8612A;
+    --rainy: #3A86D9;
+    --cool: #1E9E5B;
+    --year: #8A4FC7;
+    --bg: #0B1720;
+    --bg2: #0F1E2B;
+    --card: #162433;
+    --card2: #1B2D3E;
+    --border: #243C52;
+    --border2: #1E3347;
+    --text: #DFF0FF;
+    --muted: #7A9BB5;
+    --gold: #F0C233;
+    --green: #28C76F;
+    --red: #E74C3C;
+    --kpp: #2E7D5A;
+    --kpp-light: #3DAA7A;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px; }
+
+  /* ===== HERO HEADER ===== */
+  .hero {
+    background: linear-gradient(135deg, #0a2318 0%, #0e2f1f 40%, #112a1a 100%);
+    border:1px solid #1e4a30;
+    border-radius:20px;
+    padding:0;
+    margin-bottom:20px;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero-inner { padding:32px 40px; position:relative; z-index:2; }
+  .hero::after {
+    content:'🌾';
+    position:absolute; right:40px; top:50%; transform:translateY(-50%);
+    font-size:8rem; opacity:0.07; z-index:1; pointer-events:none;
+  }
+  .province-tag {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(46,125,90,0.3); border:1px solid rgba(61,170,122,0.5);
+    border-radius:50px; padding:5px 14px; font-size:0.8rem; color:#5DD8A0;
+    margin-bottom:14px; font-weight:600;
+  }
+  .hero h1 { font-size:2.3rem; font-weight:800; color:#fff; line-height:1.15; }
+  .hero h1 em { color:#3DAA7A; font-style:normal; }
+  .hero p { color:#8ec4a0; margin-top:10px; font-size:0.95rem; line-height:1.6; max-width:600px; }
+  .hero-stats {
+    display:flex; gap:16px; margin-top:20px; flex-wrap:wrap;
+  }
+  .hstat {
+    background:rgba(61,170,122,0.12); border:1px solid rgba(61,170,122,0.3);
+    border-radius:12px; padding:12px 18px; text-align:center; min-width:90px;
+  }
+  .hstat .n { font-size:1.6rem; font-weight:800; color:#3DAA7A; }
+  .hstat .l { font-size:0.72rem; color:#7ab896; margin-top:2px; }
+
+  /* ===== KPP INFO BAR ===== */
+  .info-bar {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:12px; margin-bottom:20px;
+  }
+  .ibar-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:16px 18px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .ibar-icon { font-size:1.8rem; flex-shrink:0; }
+  .ibar-label { font-size:0.7rem; color:var(--muted); }
+  .ibar-val { font-size:0.92rem; font-weight:700; color:#fff; margin-top:2px; }
+
+  /* ===== SEASON PILLS ===== */
+  .season-row { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  .spill {
+    display:flex; align-items:center; gap:7px;
+    background:var(--card); border:1px solid var(--border);
+    border-radius:50px; padding:7px 14px; font-size:0.82rem;
+  }
+  .dot { width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+
+  /* ===== FILTER ===== */
+  .filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+  .fbtn {
+    padding:7px 16px; border-radius:50px; border:1px solid var(--border);
+    background:var(--card); color:var(--muted); cursor:pointer;
+    font-family:'Sarabun',sans-serif; font-size:0.82rem; font-weight:600;
+    transition:all .2s;
+  }
+  .fbtn:hover,.fbtn.active {
+    border-color:var(--kpp-light); color:var(--kpp-light);
+    background:rgba(61,170,122,0.1);
+  }
+
+  /* ===== SECTION TITLE ===== */
+  .stitle {
+    font-size:1.05rem; font-weight:700; color:#fff;
+    margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .stitle::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ===== VEG CARDS ===== */
+  .vgrid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:16px; margin-bottom:32px;
+  }
+  .vcard {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:16px; padding:20px;
+    transition:all .25s; position:relative; overflow:hidden;
+  }
+  .vcard:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .vcard::before {
+    content:''; position:absolute; top:0; left:0;
+    width:4px; height:100%; border-radius:16px 0 0 16px;
+  }
+  .vcard.hot::before  { background:var(--hot); }
+  .vcard.rainy::before{ background:var(--rainy); }
+  .vcard.cool::before { background:var(--cool); }
+  .vcard.year::before { background:var(--year); }
+
+  .vchead { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+  .vcname .th { font-size:1.1rem; font-weight:700; color:#fff; }
+  .vcname .en { font-size:0.75rem; color:var(--muted); margin-top:2px; }
+  .vcname .local { font-size:0.72rem; color:#5DD8A0; margin-top:2px; font-style:italic; }
+  .vcemo { font-size:2.1rem; }
+
+  .badges { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:11px; }
+  .badge {
+    border-radius:5px; padding:2px 8px;
+    font-size:0.7rem; font-weight:600; border:1px solid;
+  }
+  .b-hot  { background:rgba(232,97,42,.15);  color:#F08055; border-color:rgba(232,97,42,.3); }
+  .b-rainy{ background:rgba(58,134,217,.15); color:#6AAEE8; border-color:rgba(58,134,217,.3); }
+  .b-cool { background:rgba(30,158,91,.15);  color:#4DCB88; border-color:rgba(30,158,91,.3); }
+  .b-year { background:rgba(138,79,199,.15); color:#B080D8; border-color:rgba(138,79,199,.3); }
+  .b-easy { background:rgba(40,199,111,.15); color:#28C76F; border-color:rgba(40,199,111,.3); }
+  .b-med  { background:rgba(240,194,51,.15); color:#F0C233; border-color:rgba(240,194,51,.3); }
+  .b-hard { background:rgba(231,76,60,.15);  color:#E74C3C; border-color:rgba(231,76,60,.3); }
+  .b-star { background:rgba(61,170,122,.2);  color:#3DAA7A; border-color:rgba(61,170,122,.4); }
+
+  .price-box {
+    background:linear-gradient(135deg,rgba(240,194,51,.1),rgba(240,194,51,.05));
+    border:1px solid rgba(240,194,51,.3);
+    border-radius:10px; padding:10px 14px; margin-bottom:11px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .price-box .pl { font-size:0.72rem; color:#b8982a; }
+  .price-box .pv { font-size:0.98rem; font-weight:800; color:var(--gold); }
+  .price-box .pp { font-size:0.8rem; font-weight:700; color:var(--green); }
+
+  .irow { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:11px; }
+  .ibox {
+    background:var(--card2); border:1px solid var(--border2);
+    border-radius:9px; padding:9px 11px;
+  }
+  .ibox .lb { font-size:0.68rem; color:var(--muted); margin-bottom:2px; }
+  .ibox .vl { font-size:0.85rem; font-weight:600; color:#fff; }
+
+  /* Month bar */
+  .mbar { margin-bottom:10px; }
+  .mbar .lb { font-size:0.68rem; color:var(--muted); margin-bottom:4px; }
+  .mgrid { display:grid; grid-template-columns:repeat(12,1fr); gap:2px; }
+  .mcell {
+    border-radius:3px; height:15px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.48rem; font-weight:600; color:rgba(255,255,255,.4);
+    background:var(--card2);
+  }
+  .mc-plant   { background:rgba(30,158,91,.55);  color:#fff; }
+  .mc-harvest { background:rgba(58,134,217,.55); color:#fff; }
+  .mc-peak    { background:rgba(240,194,51,.85);  color:#1a1200; }
+
+  /* Market + Area tags */
+  .area-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .area-tag {
+    background:rgba(46,125,90,.2); border:1px solid rgba(61,170,122,.3);
+    border-radius:6px; padding:2px 8px; font-size:0.68rem; color:#5DD8A0;
+  }
+
+  .tipbox {
+    background:rgba(61,170,122,.07); border:1px solid rgba(61,170,122,.2);
+    border-radius:8px; padding:8px 11px;
+    font-size:0.74rem; color:#8ecfb0; line-height:1.55;
+  }
+  .tipbox::before { content:'💡 '; }
+
+  /* ===== BIG CALENDAR ===== */
+  .cal-wrap { overflow-x:auto; margin-bottom:32px; }
+  .ctable { width:100%; border-collapse:separate; border-spacing:0 3px; }
+  .ctable th {
+    background:var(--card2); padding:9px 7px;
+    font-size:0.72rem; color:var(--muted); font-weight:600; text-align:center;
+  }
+  .ctable th:first-child { text-align:left; padding-left:14px; border-radius:8px 0 0 8px; min-width:140px; }
+  .ctable th:last-child { border-radius:0 8px 8px 0; }
+  .ctable td { padding:7px 4px; font-size:0.74rem; text-align:center; border-bottom:1px solid rgba(36,60,82,.4); }
+  .ctable td:first-child { text-align:left; padding-left:14px; font-weight:600; font-size:0.8rem; white-space:nowrap; }
+  .ctable tr:hover td { background:rgba(255,255,255,.025); }
+  .cc { width:22px; height:18px; border-radius:4px; display:inline-block; }
+  .cc-p { background:rgba(30,158,91,.7); }
+  .cc-h { background:rgba(58,134,217,.6); }
+  .cc-pk{ background:rgba(240,194,51,.85); }
+
+  /* ===== RANK TABLE ===== */
+  .rtable { width:100%; border-collapse:separate; border-spacing:0; margin-bottom:32px; overflow:hidden; border-radius:12px; }
+  .rtable th {
+    background:var(--card2); padding:11px 14px;
+    font-size:0.75rem; color:var(--muted); font-weight:600;
+    border-bottom:2px solid var(--border); text-align:left;
+  }
+  .rtable th:last-child { text-align:right; }
+  .rtable td { padding:11px 14px; font-size:0.82rem; border-bottom:1px solid rgba(36,60,82,.5); background:var(--card); }
+  .rtable tr:last-child td { border-bottom:none; }
+  .rtable tr:hover td { background:var(--card2); }
+  .rtable td:last-child { text-align:right; font-weight:700; }
+  .rnk { width:26px; height:26px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; }
+  .r1 { background:#F0C233; color:#1a1000; }
+  .r2 { background:#BDC3C7; color:#111; }
+  .r3 { background:#C47A2A; color:#fff; }
+  .rx { background:var(--border); color:var(--muted); }
+  .pbar-w { display:flex; align-items:center; gap:8px; }
+  .pbar { height:7px; border-radius:4px; background:linear-gradient(90deg,#28C76F,#1E9E5B); min-width:4px; }
+
+  /* ===== TIPS ===== */
+  .tgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:14px; margin-bottom:32px; }
+  .tcard { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .tcard h3 { font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:11px; }
+  .tlist { list-style:none; }
+  .tlist li {
+    font-size:0.79rem; color:#a8c8de; padding:5px 0 5px 16px;
+    border-bottom:1px solid rgba(36,60,82,.5); position:relative; line-height:1.5;
+  }
+  .tlist li::before { content:'▸'; position:absolute; left:0; color:var(--kpp-light); }
+  .tlist li:last-child { border-bottom:none; }
+
+  /* ===== MARKET MAP ===== */
+  .mktgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:32px; }
+  .mktcard {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:16px;
+  }
+  .mktcard .icon { font-size:1.5rem; margin-bottom:8px; }
+  .mktcard h4 { font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:6px; }
+  .mktcard p { font-size:0.75rem; color:var(--muted); line-height:1.5; }
+  .mktcard .tag {
+    display:inline-block; margin-top:8px;
+    background:rgba(61,170,122,.15); border:1px solid rgba(61,170,122,.3);
+    border-radius:5px; padding:2px 8px; font-size:0.68rem; color:#5DD8A0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer { text-align:center; padding:22px; color:var(--muted); font-size:0.76rem; border-top:1px solid var(--border); margin-top:16px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width:5px; height:5px; }
+  ::-webkit-scrollbar-track { background:var(--bg); }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+  /* ===== MOBILE RESPONSIVE ===== */
+  @media(max-width:768px){
+    body { padding:10px; }
+    .hero-inner { padding:18px 16px; }
+    .hero h1 { font-size:1.35rem; }
+    .hero::after { display:none; }
+    .hero p { font-size:0.85rem; }
+
+    /* Hero stats เล็กลง */
+    .hero-stats { gap:8px; margin-top:14px; }
+    .hstat { min-width:70px; padding:9px 12px; }
+    .hstat .n { font-size:1.3rem; }
+    .hstat .l { font-size:0.65rem; }
+
+    /* Info bar 1 คอลัมน์ */
+    .info-bar { grid-template-columns:1fr; gap:8px; }
+
+    /* Season pills ขนาดเล็กลง */
+    .season-row { gap:6px; }
+    .spill { font-size:0.75rem; padding:5px 10px; }
+
+    /* Filter buttons */
+    .filter-row { gap:6px; }
+    .fbtn { padding:6px 12px; font-size:0.75rem; }
+
+    /* Veg cards 1 คอลัมน์ */
+    .vgrid { grid-template-columns:1fr; gap:12px; }
+
+    /* Month bar เล็กลงบนมือถือ */
+    .mgrid { grid-template-columns:repeat(12,1fr); gap:1px; }
+    .mcell { height:12px; font-size:0.4rem; }
+
+    /* ตาราง scroll แนวนอน */
+    .cal-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .rtable { font-size:0.75rem; }
+    .rtable th, .rtable td { padding:8px 10px; }
+
+    /* Tips grid */
+    .tgrid { grid-template-columns:1fr; }
+    .mktgrid { grid-template-columns:1fr; }
+
+    /* QR section */
+
+    /* irow grid */
+    .irow { grid-template-columns:1fr 1fr; }
+  }
+
+  @media(max-width:400px){
+    .hero h1 { font-size:1.15rem; }
+    .hero-stats { gap:6px; }
+    .hstat { min-width:60px; padding:7px 8px; }
+    .hstat .n { font-size:1.1rem; }
+    .badge { font-size:0.65rem; padding:1px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="province-tag">📍 จังหวัดกำแพงเพชร · ภาคเหนือตอนล่าง</div>
+    <h1>🌾 ปลูกผักให้<em>ได้ราคาดี</em><br>เฉพาะกำแพงเพชร</h1>
+    <p>คู่มือเกษตรกรจังหวัดกำแพงเพชร วิเคราะห์ 15 ผักทำเงิน พร้อมช่วงปลูก ราคาพีค พื้นที่ปลูกที่เหมาะสม และตลาดรับซื้อในพื้นที่</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="n">15</div><div class="l">ชนิดผัก</div></div>
+      <div class="hstat"><div class="n">4</div><div class="l">อำเภอหลัก</div></div>
+      <div class="hstat" style="border-color:rgba(240,194,51,.4)"><div class="n" style="color:var(--gold)">฿</div><div class="l">วิเคราะห์ราคา</div></div>
+      <div class="hstat" style="border-color:rgba(58,134,217,.4)"><div class="n" style="color:#6AAEE8">แม่น้ำปิง</div><div class="l">แหล่งน้ำหลัก</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== KPP INFO BAR ===== -->
+<div class="info-bar">
+  <div class="ibar-card">
+    <div class="ibar-icon">🌡️</div>
+    <div>
+      <div class="ibar-label">อากาศเฉลี่ยทั้งปี</div>
+      <div class="ibar-val">27–38°C (ร้อนจัดช่วง เม.ย.–พ.ค.)</div>
+    </div>
+  </div>
+  <div class="ibar-card">
+    <div class="ibar-icon">🌧️</div>
+    <div>
+      <div class="ibar-label">ฝนเฉลี่ย/ปี</div>
+      <div class="ibar-val">~1,050 มม. · ฤดูฝน มิ.ย.–ต.ค.</div>
+    </div>
+  </div>
+  <div class="ibar-card">
+    <div class="ibar-icon">🏞️</div>
+    <div>
+      <div class="ibar-label">แหล่งน้ำสำคัญ</div>
+      <div class="ibar-val">แม่น้ำปิง · คลองชลประทาน</div>
+    </div>
+  </div>
+  <div class="ibar-card">
+    <div class="ibar-icon">🌾</div>
+    <div>
+      <div class="ibar-label">พืชอัตลักษณ์ KPP</div>
+      <div class="ibar-val">หอมแดง · กล้วยไข่ · กระเทียม</div>
+    </div>
+  </div>
+  <div class="ibar-card">
+    <div class="ibar-icon">🗺️</div>
+    <div>
+      <div class="ibar-label">อำเภอปลูกผักหลัก</div>
+      <div class="ibar-val">เมือง · คลองลาน · ขาณุฯ · พรานกระต่าย</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEASON LEGEND -->
+<div class="season-row">
+  <div class="spill"><div class="dot" style="background:var(--hot)"></div>ฤดูร้อน (มี.ค.–พ.ค.)</div>
+  <div class="spill"><div class="dot" style="background:var(--rainy)"></div>ฤดูฝน (มิ.ย.–ต.ค.)</div>
+  <div class="spill"><div class="dot" style="background:var(--cool)"></div>ฤดูหนาว (พ.ย.–ก.พ.)</div>
+  <div class="spill"><div class="dot" style="background:var(--year)"></div>ตลอดปี</div>
+  <div class="spill"><div class="dot" style="background:var(--kpp-light)"></div>⭐ ผักเด่น KPP</div>
+</div>
+
+<!-- FILTER -->
+<div class="filter-row">
+  <button class="fbtn active" onclick="fv('all',this)">🌿 ทั้งหมด</button>
+  <button class="fbtn" onclick="fv('cool',this)">❄️ ฤดูหนาว</button>
+  <button class="fbtn" onclick="fv('hot',this)">☀️ ฤดูร้อน</button>
+  <button class="fbtn" onclick="fv('rainy',this)">🌧️ ฤดูฝน</button>
+  <button class="fbtn" onclick="fv('year',this)">🔄 ตลอดปี</button>
+  <button class="fbtn" onclick="fv('easy',this)">✅ ปลูกง่าย</button>
+  <button class="fbtn" onclick="fv('star',this)">⭐ เด่น KPP</button>
+</div>
+
+<!-- ===== 15 VEG CARDS ===== -->
+<div class="stitle">📋 15 ผักทำเงินในกำแพงเพชร</div>
+<div class="vgrid" id="vg">
+
+  <!-- 1. หอมแดง -->
+  <div class="vcard cool" data-season="cool" data-diff="med" data-star="star">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">1. หอมแดง</div>
+        <div class="en">Shallot</div>
+        <div class="local">⭐ พืชอัตลักษณ์ KPP อันดับ 1</div>
+      </div>
+      <div class="vcemo">🧅</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-med">⚖️ ปานกลาง</span>
+      <span class="badge b-star">⭐ เด่น KPP</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาในฤดูกาล</div><div class="pv">40–90 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (เม.ย.–มิ.ย.)</div><div class="pp">⬆️ +200%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ต.ค. – ธ.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">75–90 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">20–28°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">น้อย (ดินแห้ง)</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน ม.ค.–ธ.ค.</div>
+      <div class="mgrid">
+        <div class="mcell mc-harvest">ม.ค.</div><div class="mcell mc-harvest">ก.พ.</div>
+        <div class="mcell mc-harvest">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell mc-peak">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell mc-plant">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 พรานกระต่าย</span>
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 ขาณุวรลักษบุรี</span>
+    </div>
+    <div class="tipbox">KPP ผลิตหอมแดงส่งออกได้ระดับประเทศ พื้นที่พรานกระต่ายดินร่วนทรายเหมาะมาก เก็บสต็อกในโรงเรือนแห้งขายช่วง เม.ย.–มิ.ย. ราคาพุ่ง 2–3 เท่า</div>
+  </div>
+
+  <!-- 2. กระเทียม -->
+  <div class="vcard cool" data-season="cool" data-diff="med" data-star="star">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">2. กระเทียม</div>
+        <div class="en">Garlic</div>
+        <div class="local">⭐ ผักเด่นประจำจังหวัด</div>
+      </div>
+      <div class="vcemo">🧄</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-med">⚖️ ปานกลาง</span>
+      <span class="badge b-star">⭐ เด่น KPP</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาในฤดูกาล</div><div class="pv">50–150 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (เม.ย.–ก.ค.)</div><div class="pp">⬆️ +250%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ต.ค. – พ.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">90–120 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">18–25°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">น้อย–ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน ม.ค.–ธ.ค.</div>
+      <div class="mgrid">
+        <div class="mcell mc-harvest">ม.ค.</div><div class="mcell mc-harvest">ก.พ.</div>
+        <div class="mcell mc-harvest">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell mc-peak">มิ.ย.</div>
+        <div class="mcell mc-peak">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 พรานกระต่าย</span>
+      <span class="area-tag">📍 ลานกระบือ</span>
+    </div>
+    <div class="tipbox">กระเทียม KPP ราคาสูงเพราะนำเข้าลดลงช่วงหน้าร้อน เก็บในที่แห้ง อากาศถ่ายเทขายได้นาน 3–4 เดือนหลังเก็บ</div>
+  </div>
+
+  <!-- 3. ผักชี -->
+  <div class="vcard cool" data-season="cool" data-diff="med" data-star="star">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">3. ผักชี</div>
+        <div class="en">Coriander</div>
+        <div class="local">⭐ รายได้สูงต่อพื้นที่ใน KPP</div>
+      </div>
+      <div class="vcemo">🌿</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-med">⚖️ ปานกลาง</span>
+      <span class="badge b-star">⭐ เด่น KPP</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาในฤดูกาล</div><div class="pv">50–180 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (เม.ย.–มิ.ย.)</div><div class="pp">⬆️ +260%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ต.ค. – ม.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">25–35 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">15–25°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน ม.ค.–ธ.ค.</div>
+      <div class="mgrid">
+        <div class="mcell mc-harvest">ม.ค.</div><div class="mcell">ก.พ.</div>
+        <div class="mcell">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell mc-peak">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell mc-plant">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 คลองขลุง</span>
+    </div>
+    <div class="tipbox">ปลูกได้แค่ฤดูหนาว ปลูก ต.ค.–พ.ย. เก็บ ธ.ค.–ม.ค. ราคาพุ่งสูงสุดช่วง เม.ย.–มิ.ย. ส่งตลาดกรุงเทพฯ ผ่านพ่อค้าคนกลาง หรือขายตลาดสดเทศบาล KPP</div>
+  </div>
+
+  <!-- 4. มะเขือเทศ -->
+  <div class="vcard cool" data-season="cool" data-diff="med">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">4. มะเขือเทศ</div>
+        <div class="en">Tomato</div>
+        <div class="local">นิยมปลูกริมแม่น้ำปิง</div>
+      </div>
+      <div class="vcemo">🍅</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-med">⚖️ ปานกลาง</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาในฤดูกาล</div><div class="pv">20–60 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (มี.ค.–พ.ค.)</div><div class="pp">⬆️ +200%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ก.ย. – พ.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">60–90 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">20–28°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">สม่ำเสมอ</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-harvest">ม.ค.</div><div class="mcell mc-harvest">ก.พ.</div>
+        <div class="mcell mc-peak">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 คลองลาน</span>
+    </div>
+    <div class="tipbox">ดินริมแม่น้ำปิงเหมาะมาก ปลูกพันธุ์ซิตร้า/สีดาได้ราคาสูงขึ้น ส่งโรงงานแปรรูปในพื้นที่ได้เลย</div>
+  </div>
+
+  <!-- 5. พริก -->
+  <div class="vcard hot" data-season="hot" data-diff="med" data-star="star">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">5. พริกขี้หนู / พริกชี้ฟ้า</div>
+        <div class="en">Chili Pepper</div>
+        <div class="local">⭐ ปลูกแพร่หลายทั่ว KPP</div>
+      </div>
+      <div class="vcemo">🌶️</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-hot">☀️ ฤดูร้อน</span>
+      <span class="badge b-med">⚖️ ปานกลาง</span>
+      <span class="badge b-star">⭐ เด่น KPP</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">30–120 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ต.ค.–ธ.ค.)</div><div class="pp">⬆️ +300%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ก.พ. – เม.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">60–90 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">น้อย–ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell">ม.ค.</div><div class="mcell mc-plant">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell">พ.ค.</div><div class="mcell">มิ.ย.</div>
+        <div class="mcell mc-harvest">ก.ค.</div><div class="mcell mc-harvest">ส.ค.</div>
+        <div class="mcell mc-harvest">ก.ย.</div><div class="mcell mc-peak">ต.ค.</div>
+        <div class="mcell mc-peak">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 ขาณุวรลักษบุรี</span>
+      <span class="area-tag">📍 พรานกระต่าย</span>
+      <span class="area-tag">📍 คลองขลุง</span>
+    </div>
+    <div class="tipbox">ต้นพริกให้ผลได้หลายเดือน ปลูก ก.พ.–มี.ค. เก็บได้ ก.ค.–ธ.ค. ราคาพีคช่วงปลายปี มีพ่อค้ามารับถึงไร่</div>
+  </div>
+
+  <!-- 6. กะหล่ำปลี -->
+  <div class="vcard cool" data-season="cool" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">6. กะหล่ำปลี</div>
+        <div class="en">Cabbage</div>
+        <div class="local">นิยมปลูกในที่ลุ่มริมน้ำ</div>
+      </div>
+      <div class="vcemo">🥬</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">8–30 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (มี.ค.–พ.ค.)</div><div class="pp">⬆️ +150%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ก.ย. – พ.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">60–90 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">15–22°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-harvest">ม.ค.</div><div class="mcell mc-harvest">ก.พ.</div>
+        <div class="mcell mc-peak">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 คลองลาน</span>
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+    </div>
+    <div class="tipbox">ผลผลิตต่อไร่สูง (~3,000 กก./ไร่) รายได้รวมดีแม้ราคาต่อกิโลไม่มาก เหมาะสำหรับเกษตรกรมือใหม่ใน KPP</div>
+  </div>
+
+  <!-- 7. แตงโม -->
+  <div class="vcard hot" data-season="hot" data-diff="easy" data-star="star">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">7. แตงโม</div>
+        <div class="en">Watermelon</div>
+        <div class="local">⭐ พรานกระต่าย–ขาณุฯ ดังมาก</div>
+      </div>
+      <div class="vcemo">🍉</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-hot">☀️ ฤดูร้อน</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+      <span class="badge b-star">⭐ เด่น KPP</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">5–15 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ธ.ค.–ก.พ.)</div><div class="pp">⬆️ +120%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ก.ย. – ต.ค. (นอกฤดู)</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">60–75 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-harvest">พ.ค.</div><div class="mcell mc-harvest">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-harvest">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 พรานกระต่าย</span>
+      <span class="area-tag">📍 ขาณุวรลักษบุรี</span>
+      <span class="area-tag">📍 คลองลาน</span>
+    </div>
+    <div class="tipbox">แตงโม KPP มีชื่อเสียงมาก ดินทรายในพรานกระต่ายเหมาะสมมาก ปลูกนอกฤดู (ก.ย.–ต.ค.) ขายได้ราคาดีกว่าช่วงปกติ</div>
+  </div>
+
+  <!-- 8. ถั่วฝักยาว -->
+  <div class="vcard rainy" data-season="rainy" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">8. ถั่วฝักยาว</div>
+        <div class="en">Yard-long Bean</div>
+        <div class="local">นิยมปลูกหลังนาและริมน้ำ</div>
+      </div>
+      <div class="vcemo">🫛</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-rainy">🌧️ ฤดูฝน/ร้อน</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">20–60 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ม.ค.–มี.ค.)</div><div class="pp">⬆️ +170%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">เม.ย. – ก.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">45–55 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell mc-peak">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-plant">พ.ค.</div><div class="mcell mc-plant">มิ.ย.</div>
+        <div class="mcell mc-plant">ก.ค.</div><div class="mcell mc-harvest">ส.ค.</div>
+        <div class="mcell mc-harvest">ก.ย.</div><div class="mcell mc-harvest">ต.ค.</div>
+        <div class="mcell">พ.ย.</div><div class="mcell">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 คลองขลุง</span>
+    </div>
+    <div class="tipbox">ปลูกซ้ำรอบ ต.ค.–พ.ย. เก็บ ม.ค.–ก.พ. ราคาพีค ต้นให้ผลนาน 2–3 เดือน ดูแลน้อย เหมาะปลูกแซมกับพืชอื่น</div>
+  </div>
+
+  <!-- 9. ฟักทอง -->
+  <div class="vcard rainy" data-season="rainy" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">9. ฟักทอง</div>
+        <div class="en">Pumpkin</div>
+        <div class="local">เก็บสต็อกขายได้นาน</div>
+      </div>
+      <div class="vcemo">🎃</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-rainy">🌧️ ฤดูฝน</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">10–25 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (พ.ย.–ม.ค.)</div><div class="pp">⬆️ +80%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">พ.ค. – ก.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">60–80 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell">ก.พ.</div>
+        <div class="mcell">มี.ค.</div><div class="mcell">เม.ย.</div>
+        <div class="mcell mc-plant">พ.ค.</div><div class="mcell mc-plant">มิ.ย.</div>
+        <div class="mcell mc-plant">ก.ค.</div><div class="mcell mc-harvest">ส.ค.</div>
+        <div class="mcell mc-harvest">ก.ย.</div><div class="mcell mc-harvest">ต.ค.</div>
+        <div class="mcell mc-peak">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 ขาณุวรลักษบุรี</span>
+      <span class="area-tag">📍 คลองลาน</span>
+    </div>
+    <div class="tipbox">ผลผลิตสูง เก็บได้นาน 3–4 เดือน ขายช่วงปลายปี–ต้นปีราคาดีกว่า เหมาะที่ดินที่ยังไม่ได้ใช้</div>
+  </div>
+
+  <!-- 10. มะระจีน -->
+  <div class="vcard rainy" data-season="rainy" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">10. มะระจีน</div>
+        <div class="en">Bitter Melon</div>
+        <div class="local">ตลาด KPP ต้องการสูง</div>
+      </div>
+      <div class="vcemo">🥒</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-rainy">🌧️ ฤดูฝน/ร้อน</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">20–50 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ธ.ค.–ก.พ.)</div><div class="pp">⬆️ +130%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">มี.ค.–เม.ย., ส.ค.–ก.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">50–60 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-harvest">พ.ค.</div><div class="mcell mc-harvest">มิ.ย.</div>
+        <div class="mcell mc-harvest">ก.ค.</div><div class="mcell mc-plant">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-harvest">ต.ค.</div>
+        <div class="mcell mc-harvest">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 คลองขลุง</span>
+    </div>
+    <div class="tipbox">ปลูกง่าย ขึ้นค้าง ให้ผลยาวนาน 2–3 เดือน ตลาดในเมือง KPP ต้องการสม่ำเสมอ</div>
+  </div>
+
+  <!-- 11. ข้าวโพดหวาน -->
+  <div class="vcard hot" data-season="hot" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">11. ข้าวโพดหวาน</div>
+        <div class="en">Sweet Corn</div>
+        <div class="local">มีโรงงานรับซื้อในพื้นที่</div>
+      </div>
+      <div class="vcemo">🌽</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-hot">☀️ ฤดูร้อน/ฝน</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">4–12 บาท/ฝัก</div></div>
+      <div><div class="pl">ราคาพีค (พ.ย.–ม.ค.)</div><div class="pp">⬆️ +100%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ก.พ.–เม.ย., ส.ค.–ก.ย.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">65–75 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–32°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">มาก</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-plant">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-harvest">พ.ค.</div><div class="mcell mc-harvest">มิ.ย.</div>
+        <div class="mcell mc-harvest">ก.ค.</div><div class="mcell mc-plant">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-harvest">ต.ค.</div>
+        <div class="mcell mc-peak">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 ขาณุวรลักษบุรี</span>
+      <span class="area-tag">📍 ลานกระบือ</span>
+    </div>
+    <div class="tipbox">มีโรงงานแปรรูปรับซื้อในพื้นที่ KPP ราคาแน่นอน ปลูกรอบ ส.ค.–ก.ย. เก็บช่วง พ.ย.–ธ.ค. ราคาดี</div>
+  </div>
+
+  <!-- 12. คะน้า -->
+  <div class="vcard year" data-season="year" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">12. คะน้า</div>
+        <div class="en">Chinese Kale</div>
+        <div class="local">Cash flow ประจำวัน</div>
+      </div>
+      <div class="vcemo">🥬</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-year">🔄 ตลอดปี</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">20–50 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (เม.ย.–มิ.ย.)</div><div class="pp">⬆️ +130%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ตลอดปี</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">35–45 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">18–30°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">สม่ำเสมอ</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน (ปลูกได้ตลอด)</div>
+      <div class="mgrid">
+        <div class="mcell mc-plant">ม.ค.</div><div class="mcell mc-plant">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-peak">เม.ย.</div>
+        <div class="mcell mc-peak">พ.ค.</div><div class="mcell mc-peak">มิ.ย.</div>
+        <div class="mcell mc-plant">ก.ค.</div><div class="mcell mc-plant">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell mc-plant">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 ทุกอำเภอ</span>
+      <span class="area-tag">📍 ตลาดสดเทศบาล KPP</span>
+    </div>
+    <div class="tipbox">ขายได้ทุกวัน รายได้ประจำ เหมาะปลูกสม่ำเสมอ ตลาดสดในเมือง KPP รับซื้อทุกวัน</div>
+  </div>
+
+  <!-- 13. กะเพรา -->
+  <div class="vcard year" data-season="year" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">13. กะเพรา</div>
+        <div class="en">Holy Basil</div>
+        <div class="local">ดูแลง่าย ROI สูง</div>
+      </div>
+      <div class="vcemo">🌿</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-year">🔄 ตลอดปี</span>
+      <span class="badge b-easy">✅ ง่ายมาก</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">30–80 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ธ.ค.–ก.พ.)</div><div class="pp">⬆️ +140%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ตลอดปี</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">30–45 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">25–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">น้อย</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-plant">พ.ค.</div><div class="mcell mc-plant">มิ.ย.</div>
+        <div class="mcell mc-plant">ก.ค.</div><div class="mcell mc-plant">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 ร้านอาหารในพื้นที่</span>
+    </div>
+    <div class="tipbox">ต้นทุนต่ำสุด ดูแลง่าย ตลาดร้านอาหารใน KPP ต้องการสม่ำเสมอ ขายได้ราคาดีช่วงหนาวเพราะผลผลิตน้อย</div>
+  </div>
+
+  <!-- 14. ผักกาดขาว -->
+  <div class="vcard cool" data-season="cool" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">14. ผักกาดขาว</div>
+        <div class="en">Chinese Cabbage</div>
+        <div class="local">ปลูกได้หลายรอบช่วงหนาว</div>
+      </div>
+      <div class="vcemo">🥬</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-cool">❄️ ฤดูหนาว</span>
+      <span class="badge b-easy">✅ ง่าย</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">15–40 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ม.ค.–ก.พ.)</div><div class="pp">⬆️ +110%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">ต.ค. – ธ.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">45–60 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">15–22°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell">มี.ค.</div><div class="mcell">เม.ย.</div>
+        <div class="mcell">พ.ค.</div><div class="mcell">มิ.ย.</div>
+        <div class="mcell">ก.ค.</div><div class="mcell">ส.ค.</div>
+        <div class="mcell">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-plant">พ.ย.</div><div class="mcell mc-plant">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 เมืองกำแพงเพชร</span>
+      <span class="area-tag">📍 คลองลาน</span>
+    </div>
+    <div class="tipbox">ปลูกได้ 2–3 รอบในฤดูหนาว ราคาดีช่วงปีใหม่ตรงกับเทศกาล ขายตลาดสดในจังหวัดได้เลย</div>
+  </div>
+
+  <!-- 15. บวบเหลี่ยม -->
+  <div class="vcard rainy" data-season="rainy" data-diff="easy">
+    <div class="vchead">
+      <div class="vcname">
+        <div class="th">15. บวบเหลี่ยม</div>
+        <div class="en">Ridged Luffa</div>
+        <div class="local">ทนอากาศร้อน KPP ได้ดี</div>
+      </div>
+      <div class="vcemo">🥒</div>
+    </div>
+    <div class="badges">
+      <span class="badge b-rainy">🌧️ ฤดูฝน/ร้อน</span>
+      <span class="badge b-easy">✅ ง่ายมาก</span>
+    </div>
+    <div class="price-box">
+      <div><div class="pl">ราคาปกติ</div><div class="pv">15–35 บาท/กก.</div></div>
+      <div><div class="pl">ราคาพีค (ธ.ค.–ก.พ.)</div><div class="pp">⬆️ +90%</div></div>
+    </div>
+    <div class="irow">
+      <div class="ibox"><div class="lb">🌱 ปลูก</div><div class="vl">มี.ค.–พ.ค., ส.ค.–ต.ค.</div></div>
+      <div class="ibox"><div class="lb">✂️ เก็บ</div><div class="vl">45–55 วัน</div></div>
+      <div class="ibox"><div class="lb">🌡️ อุณหภูมิ</div><div class="vl">28–35°C</div></div>
+      <div class="ibox"><div class="lb">💧 น้ำ</div><div class="vl">ปานกลาง</div></div>
+    </div>
+    <div class="mbar">
+      <div class="lb">📅 ปฏิทิน</div>
+      <div class="mgrid">
+        <div class="mcell mc-peak">ม.ค.</div><div class="mcell mc-peak">ก.พ.</div>
+        <div class="mcell mc-plant">มี.ค.</div><div class="mcell mc-plant">เม.ย.</div>
+        <div class="mcell mc-plant">พ.ค.</div><div class="mcell mc-harvest">มิ.ย.</div>
+        <div class="mcell mc-harvest">ก.ค.</div><div class="mcell mc-plant">ส.ค.</div>
+        <div class="mcell mc-plant">ก.ย.</div><div class="mcell mc-plant">ต.ค.</div>
+        <div class="mcell mc-harvest">พ.ย.</div><div class="mcell mc-peak">ธ.ค.</div>
+      </div>
+    </div>
+    <div class="area-row">
+      <span class="area-tag">📍 ทุกอำเภอ</span>
+      <span class="area-tag">📍 ตลาดสดเช้า KPP</span>
+    </div>
+    <div class="tipbox">ทนความร้อนของ KPP ได้ดีมาก ปลูกแซมกับพืชอื่นได้ ขึ้นค้างง่าย เก็บต่อเนื่องได้ 2–3 เดือน</div>
+  </div>
+
+</div><!-- end vgrid -->
+
+<!-- ===== CALENDAR TABLE ===== -->
+<div class="stitle">📅 ปฏิทินรวม: ปลูก → เก็บ → ราคาพีค ทั้ง 15 ชนิด</div>
+<div class="cal-wrap">
+<table class="ctable">
+  <thead>
+    <tr>
+      <th>ผัก</th>
+      <th>ม.ค.</th><th>ก.พ.</th><th>มี.ค.</th><th>เม.ย.</th><th>พ.ค.</th><th>มิ.ย.</th>
+      <th>ก.ค.</th><th>ส.ค.</th><th>ก.ย.</th><th>ต.ค.</th><th>พ.ย.</th><th>ธ.ค.</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>🧅 หอมแดง</td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+    </tr>
+    <tr><td>🧄 กระเทียม</td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-pk"></span></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td></td>
+    </tr>
+    <tr><td>🌿 ผักชี</td>
+      <td><span class="cc cc-h"></span></td><td></td><td></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+    </tr>
+    <tr><td>🍅 มะเขือเทศ</td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td></td>
+    </tr>
+    <tr><td>🌶️ พริก</td>
+      <td></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td></td><td></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🥬 กะหล่ำปลี</td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td></td>
+    </tr>
+    <tr><td>🍉 แตงโม</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-h"></span></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🫛 ถั่วฝักยาว</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-h"></span></td><td></td><td></td>
+    </tr>
+    <tr><td>🎃 ฟักทอง</td>
+      <td><span class="cc cc-pk"></span></td><td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🥒 มะระจีน</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🌽 ข้าวโพดหวาน</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🥬 คะน้า</td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+    </tr>
+    <tr><td>🌿 กะเพรา</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-pk"></span></td>
+    </tr>
+    <tr><td>🥬 ผักกาดขาว</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+    </tr>
+    <tr><td>🥒 บวบเหลี่ยม</td>
+      <td><span class="cc cc-pk"></span></td><td><span class="cc cc-pk"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-h"></span></td>
+      <td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td><td><span class="cc cc-p"></span></td>
+      <td><span class="cc cc-h"></span></td><td><span class="cc cc-pk"></span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;">
+  <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted)"><span style="width:16px;height:12px;background:rgba(30,158,91,.7);border-radius:3px;display:inline-block"></span>ช่วงปลูก</div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted)"><span style="width:16px;height:12px;background:rgba(58,134,217,.6);border-radius:3px;display:inline-block"></span>ช่วงเก็บเกี่ยว</div>
+  <div style="display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--muted)"><span style="width:16px;height:12px;background:rgba(240,194,51,.85);border-radius:3px;display:inline-block"></span>ราคาพีค</div>
+</div>
+<br>
+
+<!-- ===== RANK TABLE ===== -->
+<div class="stitle">🏆 จัดอันดับกำไร/ความคุ้มค่า เฉพาะ KPP</div>
+<div style="overflow-x:auto; margin-bottom:32px;">
+<table class="rtable">
+  <thead>
+    <tr>
+      <th>#</th><th>ผัก</th><th>ราคาพีค</th><th>ต้นทุน/ไร่</th>
+      <th>ระยะเก็บ</th><th>ความยาก</th><th>ตลาดรับซื้อ KPP</th><th>ศักยภาพกำไร</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="rnk r1">1</span></td><td>🌿 ผักชี</td><td>180 บาท/กก.</td><td>~3,000</td><td>25–35 วัน</td><td><span class="badge b-med">ปานกลาง</span></td><td>ตลาดสด, กรุงเทพฯ</td><td><div class="pbar-w"><div class="pbar" style="width:95%"></div><span style="font-size:0.75rem;color:#28C76F">สูงมาก</span></div></td></tr>
+    <tr><td><span class="rnk r2">2</span></td><td>🧄 กระเทียม</td><td>150 บาท/กก.</td><td>~8,000</td><td>90–120 วัน</td><td><span class="badge b-med">ปานกลาง</span></td><td>พ่อค้าคนกลาง, ส่งออก</td><td><div class="pbar-w"><div class="pbar" style="width:88%"></div><span style="font-size:0.75rem;color:#28C76F">สูงมาก</span></div></td></tr>
+    <tr><td><span class="rnk r3">3</span></td><td>🌶️ พริก</td><td>120 บาท/กก.</td><td>~5,000</td><td>60–90 วัน</td><td><span class="badge b-med">ปานกลาง</span></td><td>ตลาดสด, โรงงาน</td><td><div class="pbar-w"><div class="pbar" style="width:84%"></div><span style="font-size:0.75rem;color:#28C76F">สูง</span></div></td></tr>
+    <tr><td><span class="rnk rx">4</span></td><td>🧅 หอมแดง</td><td>90 บาท/กก.</td><td>~7,000</td><td>75–90 วัน</td><td><span class="badge b-med">ปานกลาง</span></td><td>ส่งออก, ตลาดไท</td><td><div class="pbar-w"><div class="pbar" style="width:80%"></div><span style="font-size:0.75rem;color:#28C76F">สูง (มีชื่อเสียง)</span></div></td></tr>
+    <tr><td><span class="rnk rx">5</span></td><td>🌿 กะเพรา</td><td>80 บาท/กก.</td><td>~2,000</td><td>30–45 วัน</td><td><span class="badge b-easy">ง่ายมาก</span></td><td>ร้านอาหาร KPP</td><td><div class="pbar-w"><div class="pbar" style="width:78%"></div><span style="font-size:0.75rem;color:#28C76F">สูง (ROI ดีสุด)</span></div></td></tr>
+    <tr><td><span class="rnk rx">6</span></td><td>🍅 มะเขือเทศ</td><td>60 บาท/กก.</td><td>~6,000</td><td>60–90 วัน</td><td><span class="badge b-med">ปานกลาง</span></td><td>ตลาดสด, โรงงาน</td><td><div class="pbar-w"><div class="pbar" style="width:64%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง-สูง</span></div></td></tr>
+    <tr><td><span class="rnk rx">7</span></td><td>🫛 ถั่วฝักยาว</td><td>60 บาท/กก.</td><td>~3,500</td><td>45–55 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสด KPP</td><td><div class="pbar-w"><div class="pbar" style="width:60%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง</span></div></td></tr>
+    <tr><td><span class="rnk rx">8</span></td><td>🥬 คะน้า</td><td>50 บาท/กก.</td><td>~2,500</td><td>35–45 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสดทุกวัน</td><td><div class="pbar-w"><div class="pbar" style="width:62%"></div><span style="font-size:0.75rem;color:#28C76F">cash flow ดี</span></div></td></tr>
+    <tr><td><span class="rnk rx">9</span></td><td>🥒 มะระจีน</td><td>50 บาท/กก.</td><td>~3,000</td><td>50–60 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสด KPP</td><td><div class="pbar-w"><div class="pbar" style="width:55%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง</span></div></td></tr>
+    <tr><td><span class="rnk rx">10</span></td><td>🥬 กะหล่ำปลี</td><td>30 บาท/กก.</td><td>~4,000</td><td>60–90 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสด, รับซื้อจำนวนมาก</td><td><div class="pbar-w"><div class="pbar" style="width:50%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง (volume)</span></div></td></tr>
+    <tr><td><span class="rnk rx">11</span></td><td>🍉 แตงโม</td><td>15 บาท/กก.</td><td>~5,000</td><td>60–75 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>พ่อค้ามารับไร่ KPP</td><td><div class="pbar-w"><div class="pbar" style="width:52%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง (มีชื่อ)</span></div></td></tr>
+    <tr><td><span class="rnk rx">12</span></td><td>🥬 ผักกาดขาว</td><td>40 บาท/กก.</td><td>~2,500</td><td>45–60 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสด KPP</td><td><div class="pbar-w"><div class="pbar" style="width:46%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง</span></div></td></tr>
+    <tr><td><span class="rnk rx">13</span></td><td>🥒 บวบเหลี่ยม</td><td>35 บาท/กก.</td><td>~2,000</td><td>45–55 วัน</td><td><span class="badge b-easy">ง่ายมาก</span></td><td>ตลาดสด KPP</td><td><div class="pbar-w"><div class="pbar" style="width:42%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง</span></div></td></tr>
+    <tr><td><span class="rnk rx">14</span></td><td>🌽 ข้าวโพดหวาน</td><td>12 บาท/ฝัก</td><td>~4,000</td><td>65–75 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>โรงงานแปรรูป KPP</td><td><div class="pbar-w"><div class="pbar" style="width:43%"></div><span style="font-size:0.75rem;color:#F0C233">ปานกลาง</span></div></td></tr>
+    <tr><td><span class="rnk rx">15</span></td><td>🎃 ฟักทอง</td><td>25 บาท/กก.</td><td>~2,500</td><td>60–80 วัน</td><td><span class="badge b-easy">ง่าย</span></td><td>ตลาดสด, แม่ค้าส่ง</td><td><div class="pbar-w"><div class="pbar" style="width:38%"></div><span style="font-size:0.75rem;color:var(--muted)">ต่ำ-ปานกลาง</span></div></td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ===== MARKET ===== -->
+<div class="stitle">🏪 ตลาดรับซื้อในกำแพงเพชร</div>
+<div class="mktgrid">
+  <div class="mktcard">
+    <div class="icon">🏢</div>
+    <h4>ตลาดสดเทศบาลเมือง KPP</h4>
+    <p>ตลาดกลางในเมือง รับซื้อผักสดทุกชนิดทุกวัน เหมาะขายคะน้า กะเพรา มะระ ถั่วฝักยาว</p>
+    <span class="tag">รายวัน</span>
+  </div>
+  <div class="mktcard">
+    <div class="icon">🚛</div>
+    <h4>พ่อค้าคนกลาง (ล้ง)</h4>
+    <p>รับซื้อหอมแดง กระเทียม พริก ส่งไปตลาดไท กรุงเทพฯ มารับถึงไร่ ราคาตามตลาดกลาง</p>
+    <span class="tag">หอมแดง, กระเทียม, พริก</span>
+  </div>
+  <div class="mktcard">
+    <div class="icon">🏭</div>
+    <h4>โรงงานแปรรูป</h4>
+    <p>รับซื้อข้าวโพดหวาน มะเขือเทศ ฟักทอง ราคาแน่นอน มีสัญญาซื้อขายล่วงหน้า</p>
+    <span class="tag">ราคาประกัน</span>
+  </div>
+  <div class="mktcard">
+    <div class="icon">📦</div>
+    <h4>ตลาดนัดชุมชน</h4>
+    <p>ตลาดนัดทุกอำเภอ เหมาะขายปลีกผักสดหลายชนิด ราคาสูงกว่าขายส่ง 20–30%</p>
+    <span class="tag">ทุกชนิด</span>
+  </div>
+  <div class="mktcard">
+    <div class="icon">🌐</div>
+    <h4>ออนไลน์ / Line / Facebook</h4>
+    <p>กลุ่มชาวสวนผัก KPP บน Facebook รับซื้อผักอินทรีย์ ราคาสูงกว่าปกติ 50–100%</p>
+    <span class="tag">ผักอินทรีย์</span>
+  </div>
+  <div class="mktcard">
+    <div class="icon">🏬</div>
+    <h4>ร้านอาหาร / โรงแรมใน KPP</h4>
+    <p>รับซื้อกะเพรา ผักชี มะเขือเทศ แตงกวา คุณภาพสม่ำเสมอ ราคาดีกว่าตลาด 30–40%</p>
+    <span class="tag">ผักสด คุณภาพสูง</span>
+  </div>
+</div>
+
+<!-- ===== TIPS ===== -->
+<div class="stitle">💡 กลยุทธ์สำหรับเกษตรกรกำแพงเพชร</div>
+<div class="tgrid">
+  <div class="tcard">
+    <h3>🌊 ใช้แม่น้ำปิงให้เกิดประโยชน์</h3>
+    <ul class="tlist">
+      <li>พื้นที่ริมน้ำปิงเหมาะมะเขือเทศ ถั่วฝักยาว ผักกาดขาว เพราะดินร่วนซุยอุดมสมบูรณ์</li>
+      <li>ใช้ระบบน้ำหยดจากชลประทานลดต้นทุนน้ำในหน้าแล้ง</li>
+      <li>หลีกเลี่ยงปลูกพืชราคาสูงในพื้นที่เสี่ยงน้ำท่วม</li>
+      <li>ช่วงน้ำลดหลังฝน (ต.ค.–พ.ย.) ดินริมน้ำเหมาะปลูกผักมาก</li>
+    </ul>
+  </div>
+  <div class="tcard">
+    <h3>🧅 ต่อยอดหอมแดง–กระเทียม</h3>
+    <ul class="tlist">
+      <li>KPP เป็นแหล่งผลิตหอมแดงชื่อดัง เจรจาส่งออกผ่านสหกรณ์ได้ราคาสูงขึ้น</li>
+      <li>แปรรูปเป็นหอมแดงทอด กระเทียมดอง เพิ่มมูลค่า 3–5 เท่า</li>
+      <li>ลงทะเบียน GI (สิ่งบ่งชี้ทางภูมิศาสตร์) เพื่อราคาพรีเมียม</li>
+      <li>สมัครรับรองเกษตรอินทรีย์ผ่านสำนักงานเกษตรจังหวัด KPP</li>
+    </ul>
+  </div>
+  <div class="tcard">
+    <h3>📅 การวางแผนรอบการปลูก</h3>
+    <ul class="tlist">
+      <li>ปลูกหอมแดง–กระเทียม ต.ค.–พ.ย. เก็บ ม.ค.–มี.ค. เก็บสต็อกขาย เม.ย.–มิ.ย.</li>
+      <li>ปลูกพริก ก.พ.–มี.ค. ทยอยเก็บ ก.ค.–ธ.ค. ราคาพีคปลายปี</li>
+      <li>สลับปลูกผักคะน้า–กะเพรา ตลอดปีเพื่อ cash flow สม่ำเสมอ</li>
+      <li>ปลูกแตงโมนอกฤดู ก.ย.–ต.ค. ราคาดีกว่าในฤดูกาล 50%</li>
+    </ul>
+  </div>
+  <div class="tcard">
+    <h3>🌡️ รับมืออากาศร้อน KPP</h3>
+    <ul class="tlist">
+      <li>ช่วง เม.ย.–พ.ค. อุณหภูมิสูงถึง 40°C ใช้โรงเรือนหรือตาข่ายพรางแสงสำหรับผักใบ</li>
+      <li>เลือกพันธุ์ทนร้อนสำหรับปลูกช่วงหน้าร้อน เช่น แตงโม บวบ มะระ</li>
+      <li>รดน้ำตอนเย็นหรือใช้ระบบน้ำหยดเพื่อประหยัดน้ำในหน้าแล้ง</li>
+      <li>ปลูกผักใบในโรงเรือนช่วงหน้าร้อนราคาพีคสูงมาก</li>
+    </ul>
+  </div>
+  <div class="tcard">
+    <h3>📞 หน่วยงานช่วยเหลือใน KPP</h3>
+    <ul class="tlist">
+      <li>สำนักงานเกษตรจังหวัดกำแพงเพชร: ให้คำปรึกษา พันธุ์ดี ปุ๋ย และเงินกู้</li>
+      <li>สหกรณ์การเกษตรพรานกระต่าย: รับซื้อหอมแดง กระเทียมราคาดี</li>
+      <li>ศูนย์วิจัยและพัฒนาการเกษตรกำแพงเพชร: ให้พันธุ์ทดสอบ</li>
+      <li>ธ.ก.ส. สาขากำแพงเพชร: สินเชื่อเกษตรกร ดอกเบี้ยต่ำ</li>
+    </ul>
+  </div>
+  <div class="tcard">
+    <h3>⭐ ผักแนะนำมือใหม่ใน KPP</h3>
+    <ul class="tlist">
+      <li>กะเพรา + คะน้า: ดูแลง่าย ขายได้ทุกวัน รายได้ประจำ</li>
+      <li>บวบเหลี่ยม + มะระ: ทนอากาศ KPP ได้ดี ต้นทุนต่ำ</li>
+      <li>ถั่วฝักยาว: ปลูกง่าย เก็บต่อเนื่องนาน เหมาะเริ่มต้น</li>
+      <li>ค่อยๆ ขยับสู่หอมแดง–กระเทียม เมื่อมีประสบการณ์แล้ว</li>
+    </ul>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p>🌾 Dashboard ปลูกผักให้ได้ราคาดี · เฉพาะจังหวัดกำแพงเพชร</p>
+  <p style="margin-top:5px;">อ้างอิงราคาจากตลาดสดกำแพงเพชร ตลาดไท และข้อมูลสำนักงานเกษตรจังหวัด · ราคาอาจผันผวนตามฤดูกาลและสภาพตลาด</p>
+</div>
+
+
+<script>
+function fv(type, btn) {
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.vcard').forEach(c => {
+    if (type === 'all') { c.style.display = ''; }
+    else if (type === 'easy') { c.style.display = c.dataset.diff === 'easy' ? '' : 'none'; }
+    else if (type === 'star') { c.style.display = c.dataset.star === 'star' ? '' : 'none'; }
+    else { c.style.display = c.dataset.season === type ? '' : 'none'; }
+  });
+}
+</script>
+
+</body>
+</html>
